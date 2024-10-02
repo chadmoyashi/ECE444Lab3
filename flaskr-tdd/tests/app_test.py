@@ -1,4 +1,3 @@
-import os
 import pytest
 from pathlib import Path
 
@@ -20,6 +19,7 @@ def client():
         db.create_all()  # setup
         yield app.test_client()  # tests run here
         db.drop_all()  # teardown
+
 
 def login(client, username, password):
     """Login helper function"""
@@ -76,6 +76,7 @@ def test_messages(client):
     assert b"&lt;Hello&gt;" in rv.data
     assert b"<strong>HTML</strong> allowed here" in rv.data
 
+
 def test_delete_message(client):
     """Ensure the messages are being deleted"""
     rv = client.get("/delete/1")
@@ -96,15 +97,16 @@ def test_search(client):
         data=dict(title="Test", text="This is a test post."),
         follow_redirects=True,
     )
-    
+
     # Now, search for the post
     assert rv.status_code == 200
     assert b"Test" in rv.data
     assert b"This is a test post." in rv.data
 
+
 def test_login_required(client):
     """Ensure that login is required for protected routes."""
-    
+
     # First, log in and add a post
     login(client, app.config["USERNAME"], app.config["PASSWORD"])
     client.post(
@@ -117,6 +119,6 @@ def test_login_required(client):
     client.get("/logout", follow_redirects=True)
 
     # Try to delete that new post
-    rv = client.get('/delete/1')
+    rv = client.get("/delete/1")
     assert rv.status_code == 401
     assert b"Please log in." in rv.data  # Should display login message
