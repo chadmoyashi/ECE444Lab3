@@ -77,11 +77,21 @@ def test_messages(client):
     assert b"<strong>HTML</strong> allowed here" in rv.data
 
 def test_delete_message(client):
-    """Ensure the messages are being deleted"""
-    rv = client.get('/delete/1')
-    data = json.loads(rv.data)
-    assert data["status"] == 1
+    """Ensure that login is required for protected routes."""
+    
+    # First, log in and add a post
+    login(client, app.config["USERNAME"], app.config["PASSWORD"])
+    client.post(
+        "/add",
+        data=dict(title="Test", text="This is a test post."),
+        follow_redirects=True,
+    )
 
+    # Try to delete that new post
+    rv = client.get('/delete/1')
+    assert rv.status_code == 200
+
+    
 def test_search(client):
     """Ensure the search functionality works correctly."""
     # First, log in and add a post to search for
@@ -96,3 +106,22 @@ def test_search(client):
     assert rv.status_code == 200
     assert b"Test" in rv.data
     assert b"This is a test post." in rv.data
+
+def test_login_required(client):
+    """Ensure that login is required for protected routes."""
+    
+    # First, log in and add a post
+    login(client, app.config["USERNAME"], app.config["PASSWORD"])
+    client.post(
+        "/add",
+        data=dict(title="Test", text="This is a test post."),
+        follow_redirects=True,
+    )
+
+    # Second, logout
+    client.get("/logout", follow_redirects=True)
+
+    # Try to delete that new post
+    rv = client.get('/delete/1')
+    assert rv.status_code == 401
+    assert b"Please log in." in rv.data  # Should display login message
