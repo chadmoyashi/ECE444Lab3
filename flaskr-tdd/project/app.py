@@ -9,7 +9,7 @@ from functools import wraps
 
 basedir = Path(__file__).resolve().parent
 
-url = os.getenv('postgresql://ece444_deploy_dbtest_ptss_user:c2Tg6SH9JACAaZMwwLBgCgVdqktNJ36G@dpg-cruni5btq21c73a2t1og-a.virginia-postgres.render.com/ece444_deploy_dbtest_ptss', f'sqlite:///{Path(basedir).joinpath(DATABASE)}')
+url = os.getenv('DATABASE_URL', f'sqlite:///{Path(basedir).joinpath(DATABASE)}')
 
 if url.startswith("postgres://"):
     url = url.replace("postgres://", "postgresql://", 1)
