@@ -1,6 +1,8 @@
 import sqlite3
 from pathlib import Path
 
+import os
+
 from flask import Flask, g, render_template, request, session, \
                   flash, redirect, url_for, abort, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -8,6 +10,8 @@ from flask_sqlalchemy import SQLAlchemy
 from functools import wraps
 
 basedir = Path(__file__).resolve().parent
+
+dataurl = 'postgresql://ece444_deploy_dbtest_ptss_user:c2Tg6SH9JACAaZMwwLBgCgVdqktNJ36G@dpg-cruni5btq21c73a2t1og-a.virginia-postgres.render.com/ece444_deploy_dbtest_ptss'
 
 url = os.getenv('DATABASE_URL', f'sqlite:///{Path(basedir).joinpath(DATABASE)}')
 
