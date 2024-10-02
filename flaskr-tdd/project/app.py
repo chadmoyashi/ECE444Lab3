@@ -9,12 +9,18 @@ from functools import wraps
 
 basedir = Path(__file__).resolve().parent
 
+url = os.getenv('postgresql://ece444_deploy_dbtest_ptss_user:c2Tg6SH9JACAaZMwwLBgCgVdqktNJ36G@dpg-cruni5btq21c73a2t1og-a.virginia-postgres.render.com/ece444_deploy_dbtest_ptss', f'sqlite:///{Path(basedir).joinpath(DATABASE)}')
+
+if url.startswith("postgres://"):
+    url = url.replace("postgres://", "postgresql://", 1)
+
+SQLALCHEMY_DATABASE_URI = url
+
 # configuration
 DATABASE = "flaskr.db"
 USERNAME = "admin"
 PASSWORD = "admin"
 SECRET_KEY = "change_me"
-SQLALCHEMY_DATABASE_URI = f'sqlite:///{Path(basedir).joinpath(DATABASE)}'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
@@ -95,7 +101,7 @@ def delete_entry(post_id):
         result = {'status': 0, 'message': repr(e)}
     return jsonify(result)
 
-    
+
 @app.route('/search/', methods=['GET'])
 def search():
     query = request.args.get("query")
